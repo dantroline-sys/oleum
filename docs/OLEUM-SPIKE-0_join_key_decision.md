@@ -72,11 +72,10 @@ rust:op:core::mem::swap#free
    completion lane — shadow-accept the visible top-N candidates in an unsent
    buffer copy and annotate asynchronously.  (a) ships first.
 3. **`as:<Trait>` is a trait *name*, not a full path** (`SliceStats`,
-   `Iterator`).  Two same-named traits in scope could collide.  Mitigation:
-   at harvest/import time resolve the trait's own defining path (definition +
-   externalDocs on the trait ident) and record the full form; runtime keys
-   with the name form and the probe harness adjudicates collisions.  OPEN,
-   tracked for the runtime contract.
+   `Iterator`).  Two same-named traits in scope could collide.  ~~OPEN~~ —
+   **RESOLVED same day**, see §6: the accepted-form lane recovers the full
+   trait defining path via declaration-jump, and the id grammar changed
+   accordingly.
 4. **`experimental/*` protocol surface** — no stability guarantee upstream.
    Acceptable because the toolchain is pinned by contract policy (a bump is a
    deliberate event that invalidates probe verdicts and forces a re-run of
@@ -90,3 +89,35 @@ rust:op:core::mem::swap#free
 Containment / ordering / non-suppression enforcement stays oleum-side per
 AMIGA-RUST-02; vinur's map-keyed `ops_annotate` (VINUR-OPS-01, built) is the
 join surface.  Nothing in this decision touches vinur.
+
+## 6. Addendum (2026-07-15) — accepted-form refinement, FINAL id grammar
+
+Building the MCP face exposed an asymmetry: the `(as Trait)` disambiguator
+comes from *completion items*, which don't exist when annotating accepted-form
+code (the MCP diff lane, and the RUST-03 harvester, which also reads
+accepted-form corpora).  Follow-up probe (`spikes/spike0/probe_trait.py`):
+**`textDocument/declaration` on a trait-impl method jumps to the trait's
+method declaration, and `externalDocs` there returns the trait page** —
+`ext/trait.SliceStats.html#tymethod.mean`, i.e. the **full trait defining
+path**, strictly better than the name-only completion form.
+
+Final grammar (implemented in `oleum/opkey.py`, exercised by
+`tests/mcp_face_test.py`):
+
+```
+rust:op:<defining-path>#free        fn.X page, no anchor
+rust:op:<defining-path>#inherent    struct/enum page anchor; also the hover
+                                    fallback for primitives
+rust:op:<trait-defining-path>#trait declaration target is a trait page
+                                    (anchor tymethod. = required, method. = provided)
+```
+
+Examples: `rust:op:ext::SliceStats::mean#trait`,
+`rust:op:core::iter::traits::iterator::Iterator::map#trait`,
+`rust:op:alloc::vec::Vec::push#inherent`, `rust:op:core::mem::swap#free`.
+
+Receiver specialization (`Vec<i32>` for `mean`) is deliberately **not** in the
+id: RUST-03 keys conditional rank on typed-context features, so the receiver
+travels as a context feature.  The §3 `as:<Trait>` form is superseded; the
+completion lane, when built, MUST derive the same `#trait` ids via
+declaration-jump on the shadow-accepted buffer.

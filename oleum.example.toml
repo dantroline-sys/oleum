@@ -1,0 +1,18 @@
+# oleum configuration — copy to oleum.toml (or point OLEUM_CONFIG at it).
+# All keys optional; defaults in oleum/config.py.
+
+# The vinur knowledge host.  Its config needs the op-id region enabled
+# (ops_regions = ["rust=rust-coding"]) for annotations to join.
+vinur_url = "http://127.0.0.1:8771"
+vinur_token = ""
+
+# Facet value for rust_practice lookups; must match the host's region tag.
+domain_facet = "rust-coding"
+
+# Cargo roots the daemon may open (rust_annotate also infers the root by
+# walking up from the file).
+workspaces = []
+
+# rust-analyzer binary; the default resolves through PATH, so the rustup shim
+# honours rust-toolchain.toml and the pin stays authoritative.
+ra_bin = "rust-analyzer"
