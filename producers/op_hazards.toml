@@ -1,0 +1,99 @@
+# Curated op hazards — the manually collected starter set (AMIGA-RUST-02).
+# Each entry becomes an op node + one hazard card in the rust-base pack.
+# Ids MUST match what oleum/opkey.py derives from accepted-form code:
+# tests/hazard_pack_test.py golden-checks every id against the live extractor
+# over fixtures/join_ws/app/src/bin/hazards.rs.  The researcher lane grows this
+# file later; entries are hand-verified, trust stays curated-tier.
+
+[[op]]
+id = "rust:op:core::option::Option::unwrap#inherent"
+label = "Option::unwrap"
+severity = "warn"
+title = "panics on None"
+why = "unwrap panics with no context when the value is None; in library or long-running code this turns a representable state into a crash."
+instead = "propagate with `?`, or unwrap_or / unwrap_or_else / match; at minimum expect(\"reason\") so the panic says why."
+diag = "clippy::unwrap_used"
+
+[[op]]
+id = "rust:op:core::result::Result::unwrap#inherent"
+label = "Result::unwrap"
+severity = "warn"
+title = "panics on Err, discarding the error"
+why = "unwrap throws away the error value and panics; the failure cause is lost exactly where it mattered."
+instead = "propagate with `?` (add the error type to the signature), or match / unwrap_or_else; expect(\"reason\") at minimum."
+diag = "clippy::unwrap_used"
+
+[[op]]
+id = "rust:op:core::option::Option::expect#inherent"
+label = "Option::expect"
+severity = "info"
+title = "panics on None (with a message)"
+why = "expect is a deliberate panic point; fine for invariants, wrong for reachable states."
+instead = "reserve for genuine invariants; message should state why None is impossible, not what happened."
+diag = "clippy::expect_used"
+
+[[op]]
+id = "rust:op:core::result::Result::expect#inherent"
+label = "Result::expect"
+severity = "info"
+title = "panics on Err (with a message)"
+why = "expect is a deliberate panic point; fine for invariants, wrong for fallible operations the caller could handle."
+instead = "reserve for genuine invariants; otherwise propagate with `?`."
+diag = "clippy::expect_used"
+
+[[op]]
+id = "rust:op:core::mem::forget#free"
+label = "mem::forget"
+severity = "warn"
+title = "destructor never runs; resources leak"
+why = "forget skips Drop: files stay open, locks stay held, memory leaks.  Safe by Rust's rules, almost never what you want."
+instead = "let values drop naturally, or use ManuallyDrop when the intent is explicit ownership transfer."
+diag = "clippy::mem_forget"
+
+[[op]]
+id = "rust:op:core::intrinsics::transmute#free"
+label = "mem::transmute"
+severity = "error"
+title = "type reinterpretation; UB if layouts or invariants differ"
+why = "transmute bypasses every type-system guarantee — size/alignment mismatch, invalid bit patterns, or lifetime laundering are instant undefined behaviour."
+instead = "prefer as-casts, from_bits/to_bits, From/TryFrom conversions, or pointer casts; each transmute needs a layout argument in a comment."
+
+[[op]]
+id = "rust:op:core::cell::RefCell::borrow#inherent"
+label = "RefCell::borrow"
+severity = "warn"
+title = "panics at runtime if a mutable borrow is live"
+why = "RefCell moves borrow checking to runtime: an overlapping borrow_mut anywhere in the call path panics (BorrowError), often far from the cause."
+instead = "keep borrow scopes minimal and never hold across calls that may re-enter; use try_borrow where overlap is possible."
+
+[[op]]
+id = "rust:op:core::cell::RefCell::borrow_mut#inherent"
+label = "RefCell::borrow_mut"
+severity = "warn"
+title = "panics at runtime if any borrow is live"
+why = "an overlapping borrow anywhere in the call path panics (BorrowMutError); re-entrant callbacks are the classic trigger."
+instead = "keep the mutable borrow scope tight (drop the guard before calling out); use try_borrow_mut where overlap is possible."
+
+[[op]]
+id = "rust:op:std::sync::poison::mutex::Mutex::lock#inherent"
+label = "Mutex::lock"
+severity = "info"
+title = "returns Err when poisoned; blind unwrap propagates panics across threads"
+why = "a panic while the lock is held poisons it; lock().unwrap() then panics in every other thread that touches the mutex."
+instead = "decide poisoning policy explicitly: unwrap_or_else(|e| e.into_inner()) to keep going, or propagate; consider parking_lot when poisoning is unwanted."
+
+[[op]]
+id = "rust:op:alloc::vec::Vec::remove#inherent"
+label = "Vec::remove"
+severity = "info"
+title = "O(n) shift; panics when index is out of bounds"
+why = "remove shifts every later element left and panics on a bad index."
+instead = "swap_remove when order doesn't matter (O(1)); check the index or use get(..) patterns first."
+
+[[op]]
+id = "rust:op:std::process::exit#free"
+label = "process::exit"
+severity = "warn"
+title = "terminates immediately; destructors never run"
+why = "exit skips Drop for everything on the stack and never unwinds: buffers stay unflushed, temp files stay behind, guards never release."
+instead = "return an ExitCode from main (or bubble an error up to main) so the stack unwinds normally."

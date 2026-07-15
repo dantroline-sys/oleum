@@ -35,7 +35,7 @@ touches vinur.
 |---|---|---|
 | VINUR-OPS-01 | vinur-side op-annotation surface | **built** (vinur repo) |
 | SPIKE-0 | join key: r-a candidate → op id | **decided** — [docs/OLEUM-SPIKE-0_join_key_decision.md](docs/OLEUM-SPIKE-0_join_key_decision.md) |
-| AMIGA-RUST-02 | annotation runtime, hazard import, probes | **MCP face + extractor built**; hazard import + probes next |
+| AMIGA-RUST-02 | annotation runtime, hazard import, probes | **built** (MCP face, rust-base pack producer, probe harness); trace capture next |
 | AMIGA-RUST-03 | learned layer (harvest, negatives, conditional rank) | after -02 |
 
 ## Layout
@@ -45,12 +45,16 @@ oleum/                     the daemon (stdlib only)
   mcp_server.py            stdio MCP server: rust_annotate / rust_hazards / rust_practice
   ra.py                    rust-analyzer session pool + semantic-token op extraction
   opkey.py                 op-id synthesis (the SPIKE-0 recipe, §6 grammar)
+  probe.py                 rustc adjudication probes -> var/probes.db (ra_divergence)
   vinur_client.py          POST /call client, fail-open
   config.py                oleum.toml over DEFAULTS
+producers/                 knowledge-pack toolchain (never runs on the host)
+  op_hazards.toml          curated op hazards (ids golden-checked vs the extractor)
+  build_pack.py            rustc error index + Clippy + curated -> dist/rust-base.kdb
 rust-toolchain.toml        pinned rustc + rust-analyzer + rust-src
-fixtures/join_ws/          golden fixture workspace (9 join cases; app + ext crates)
+fixtures/join_ws/          golden fixture workspace (join cases + hazards.rs)
 spikes/spike0/             stdlib-only LSP harness + join-key evaluation
-tests/                     end-to-end test (stub vinur + real r-a + real stdio MCP)
+tests/                     mcp_face / hazard_pack / probe suites
 docs/                      decision records
 ```
 
@@ -71,12 +75,26 @@ op-id region configured (`ops_regions`) for annotations to join — without it,
 tools still work and report `knowledge: "unavailable"`/bare ops, because
 knowledge is decoration, never a gate.
 
+## Knowledge pack
+
+```
+rustup component add clippy                            # producer-only dependency
+python3 producers/build_pack.py                        # -> dist/rust-base.kdb (~19s)
+```
+
+Import on the host: `python3 -m knowledgehost import-bundle --path rust-base.kdb`
+(or the panel's Bundles tab), then run facetize.  Rebuilds from identical
+sources are content-stable — re-importing an unchanged pack is a no-op for
+`graph_version`.  Bump the toolchain pin → rebuild the pack.
+
 ## Tests / spike
 
 ```
 rustup toolchain install 1.97.0 --profile minimal --component rust-analyzer,rust-src
-cd fixtures/join_ws && cargo check --bin completed     # fixture gate
+cd fixtures/join_ws && cargo check --bin completed --bin hazards   # fixture gate
 python3 tests/mcp_face_test.py                         # end-to-end MCP face
+python3 tests/hazard_pack_test.py                      # golden ids + pack round-trip
+python3 tests/probe_test.py                            # rustc adjudication harness
 cd spikes/spike0 && python3 run_spike.py               # join-key regression baseline
 ```
 

@@ -20,7 +20,7 @@ _SKIP_MODIFIERS = {"declaration", "definition", "documentation"}
 class Session:
     def __init__(self, root, ra_bin="rust-analyzer", quiesce_timeout=300.0,
                  request_timeout=120.0):
-        self.root = Path(root)
+        self.root = Path(root).resolve()
         if not (self.root / "Cargo.toml").is_file():
             raise FileNotFoundError(f"no Cargo.toml under {root}")
         self.request_timeout = request_timeout
@@ -31,6 +31,7 @@ class Session:
         self.buf = bytearray()
         self.next_id = 1
         self.server_status = {}
+        self.diagnostics = {}
         self.doc_version = 0
         init = self.request("initialize", {
             "processId": os.getpid(),
@@ -101,6 +102,9 @@ class Session:
             self._send({"jsonrpc": "2.0", "id": msg["id"], "result": result})
         elif msg.get("method") == "experimental/serverStatus":
             self.server_status = msg.get("params") or {}
+        elif msg.get("method") == "textDocument/publishDiagnostics":
+            p = msg.get("params") or {}
+            self.diagnostics[p.get("uri")] = p.get("diagnostics") or []
         return msg
 
     def request(self, method, params, timeout=None):
@@ -123,6 +127,15 @@ class Session:
             except TimeoutError:
                 pass
         return False
+
+    def pump(self, seconds):
+        """Drain server notifications for a settle period (diagnostics arrive async)."""
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
+            try:
+                self._dispatch(self._read_frame(deadline))
+            except TimeoutError:
+                return
 
     def alive(self):
         return self.p.poll() is None
@@ -161,7 +174,7 @@ class Session:
         "hint": container}} with 1-based lines, and unkeyed counts uses no
         mechanism could key (fail-open: absence of knowledge, never an error).
         """
-        path = Path(path)
+        path = Path(path).resolve()
         text = code if code is not None else path.read_text()
         uri = path.as_uri()
         self.doc_version += 1

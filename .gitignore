@@ -1,2 +1,4 @@
 fixtures/join_ws/target/
 __pycache__/
+dist/
+var/
