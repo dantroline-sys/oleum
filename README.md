@@ -85,5 +85,6 @@ Pure-python stdlib throughout, no services; the spike report in
 
 ## License
 
-PolyForm Noncommercial planned (vinkona precedent); not yet applied — do not
-distribute.
+PolyForm Noncommercial License 1.0.0 — see [LICENSE](LICENSE).  Free for
+noncommercial use.  The vinur knowledge host it consumes remains Apache 2.0
+in its own repository.
