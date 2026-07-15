@@ -1,0 +1,513 @@
+{
+  "keys_pass2": {
+    "assoc_fn": {
+      "doc_url": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.new",
+      "hover_key": "alloc::vec::Vec::new",
+      "op_id": "rust:op:alloc::vec::Vec::new#inherent"
+    },
+    "deref_method": {
+      "doc_url": null,
+      "hover_key": "core::str::trim",
+      "op_id": "rust:op:core::str::trim#inherent"
+    },
+    "ext_trait_method": {
+      "doc_url": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.mean",
+      "hover_key": "ext::Vec::mean",
+      "op_id": "rust:op:alloc::vec::Vec::mean#as:SliceStats"
+    },
+    "free_fn_generic": {
+      "doc_url": "https://doc.rust-lang.org/stable/core/mem/fn.swap.html",
+      "hover_key": "core::mem::swap",
+      "op_id": "rust:op:core::mem::swap#free"
+    },
+    "inherent_method": {
+      "doc_url": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.push",
+      "hover_key": "alloc::vec::Vec::push",
+      "op_id": "rust:op:alloc::vec::Vec::push#inherent"
+    },
+    "macro_generated": {
+      "doc_url": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.generated",
+      "hover_key": "ext::Widget::generated",
+      "op_id": "rust:op:ext::inner::Widget::generated#inherent"
+    },
+    "reexport_method": {
+      "doc_url": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.label",
+      "hover_key": "ext::inner::Widget::label",
+      "op_id": "rust:op:ext::inner::Widget::label#inherent"
+    },
+    "trait_method_std": {
+      "doc_url": "https://doc.rust-lang.org/stable/core/iter/traits/iterator/trait.Iterator.html#method.map",
+      "hover_key": "core::iter::traits::iterator::Iterator::map",
+      "op_id": "rust:op:core::iter::traits::iterator::Iterator::map#as:Iterator"
+    },
+    "user_trait_method": {
+      "doc_url": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.greet",
+      "hover_key": "ext::Widget::greet",
+      "op_id": "rust:op:ext::inner::Widget::greet#as:Greet"
+    }
+  },
+  "keys_stable_across_sessions": true,
+  "pass1": {
+    "cases": {
+      "assoc_fn": {
+        "candidates": 74,
+        "definition_tail": "alloc/src/vec/mod.rs",
+        "external_docs": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.new",
+        "hover_blocks": [
+          "alloc::vec::Vec",
+          "impl<T> Vec<T, Global>\npub const fn new() -> Self"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "lyCSYdW0bYaLQKEGirMgxsyemsg=",
+            "position": {
+              "position": {
+                "character": 33,
+                "line": 9
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 3,
+          "label": "new()",
+          "labelDetails": {
+            "description": "const fn() -> Vec<T, Global>"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "const fn() -> Vec<T, Global>",
+          "documentation_head": "Constructs a new, empty `Vec<T>`.\n\nThe vector will not allocate until elements are pushed onto it.\n\n# Examples\n\n```rust\nlet mut vec: Vec<i32> = Vec::new();\n```",
+          "kind": 3,
+          "label": "new()",
+          "labelDetails": {
+            "description": "const fn() -> Vec<T, Global>"
+          }
+        }
+      },
+      "deref_method": {
+        "candidates": 139,
+        "definition_tail": "core/src/str/mod.rs",
+        "external_docs": null,
+        "hover_blocks": [
+          "core::str",
+          "pub fn trim(&self) -> &str"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "bJxjzVR0m9uQAkXYx5nT2l4Q6Jw=",
+            "position": {
+              "position": {
+                "character": 17,
+                "line": 12
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "trim()",
+          "labelDetails": {
+            "description": "fn(&self) -> &str"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(&self) -> &str",
+          "documentation_head": "Returns a string slice with leading and trailing whitespace removed.\n\n'Whitespace' is defined according to the terms of the Unicode Derived\nCore Property `White_Space`, which includes newlines.\n\n# Exa",
+          "kind": 2,
+          "label": "trim()",
+          "labelDetails": {
+            "description": "fn(&self) -> &str"
+          }
+        }
+      },
+      "ext_trait_method": {
+        "candidates": 259,
+        "definition_tail": "join_ws/ext/src/lib.rs",
+        "external_docs": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.mean",
+        "hover_blocks": [
+          "ext::Vec",
+          "fn mean(&self) -> f64"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "iy9xMnIHk7kGBGnNai/tnbNDdYI=",
+            "position": {
+              "position": {
+                "character": 17,
+                "line": 14
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "mean()",
+          "labelDetails": {
+            "description": "fn(&self) -> f64",
+            "detail": "(as SliceStats)"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(&self) -> f64",
+          "kind": 2,
+          "label": "mean()",
+          "labelDetails": {
+            "description": "fn(&self) -> f64",
+            "detail": "(as SliceStats)"
+          }
+        }
+      },
+      "free_fn_generic": {
+        "candidates": 22,
+        "definition_tail": "core/src/mem/mod.rs",
+        "external_docs": "https://doc.rust-lang.org/stable/core/mem/fn.swap.html",
+        "hover_blocks": [
+          "core::mem",
+          "pub const fn swap<T>(x: &mut T, y: &mut T)"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "P9pOfXW6NGP7ssGKmXXRI1NBCVc=",
+            "position": {
+              "position": {
+                "character": 16,
+                "line": 19
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 3,
+          "label": "swap(\u2026)",
+          "labelDetails": {
+            "description": "const fn(&mut T, &mut T)"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "const fn(&mut T, &mut T)",
+          "documentation_head": "Swaps the values at two mutable locations, without deinitializing either one.\n\n* If you want to swap with a default or dummy value, see [`take`].\n* If you want to swap with a passed value, returning t",
+          "kind": 3,
+          "label": "swap(\u2026)",
+          "labelDetails": {
+            "description": "const fn(&mut T, &mut T)"
+          }
+        }
+      },
+      "inherent_method": {
+        "candidates": 261,
+        "definition_tail": "alloc/src/vec/mod.rs",
+        "external_docs": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.push",
+        "hover_blocks": [
+          "alloc::vec::Vec",
+          "impl<T, A> Vec<T, A>\npub fn push(&mut self, value: T)\nwhere\n    // Bounds from impl:\n    A: Allocator + Destruct,"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "p+fzmf7jbqlC2vWZKkSYB2oGlAI=",
+            "position": {
+              "position": {
+                "character": 8,
+                "line": 10
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "push(\u2026)",
+          "labelDetails": {
+            "description": "fn(&mut self, T)"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(&mut self, T)",
+          "documentation_head": "Appends an element to the back of a collection.\n\n# Panics\n\nPanics if the new capacity exceeds `isize::MAX` _bytes_.\n\n# Examples\n\n```rust\nlet mut vec = vec![1, 2];\nvec.push(3);\nassert_eq!(vec, [1, 2, 3",
+          "kind": 2,
+          "label": "push(\u2026)",
+          "labelDetails": {
+            "description": "fn(&mut self, T)"
+          }
+        }
+      },
+      "macro_generated": {
+        "candidates": 16,
+        "definition_tail": "join_ws/ext/src/lib.rs",
+        "external_docs": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.generated",
+        "hover_blocks": [
+          "ext::Widget",
+          "pub fn generated(&self) -> i32"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "PtS0S/cr0VmvJlOj5uPp0Ql5lX8=",
+            "position": {
+              "position": {
+                "character": 19,
+                "line": 17
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "generated()",
+          "labelDetails": {
+            "description": "fn(&self) -> i32"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(&self) -> i32",
+          "kind": 2,
+          "label": "generated()",
+          "labelDetails": {
+            "description": "fn(&self) -> i32"
+          }
+        }
+      },
+      "reexport_method": {
+        "candidates": 16,
+        "definition_tail": "join_ws/ext/src/lib.rs",
+        "external_docs": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.label",
+        "hover_blocks": [
+          "ext::inner::Widget",
+          "pub fn label(&self) -> String"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "IrEtrHEv2pCPqHAHlTZF3PV1mLg=",
+            "position": {
+              "position": {
+                "character": 17,
+                "line": 16
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "label()",
+          "labelDetails": {
+            "description": "fn(&self) -> String"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(&self) -> String",
+          "kind": 2,
+          "label": "label()",
+          "labelDetails": {
+            "description": "fn(&self) -> String"
+          }
+        }
+      },
+      "trait_method_std": {
+        "candidates": 88,
+        "definition_tail": "src/iter/traits/iterator.rs",
+        "external_docs": "https://doc.rust-lang.org/stable/core/iter/traits/iterator/trait.Iterator.html#method.map",
+        "hover_blocks": [
+          "core::iter::traits::iterator::Iterator",
+          "pub trait Iterator\npub fn map<B, F>(self, f: F) -> Map<Self, F>\nwhere\n    Self: Sized,\n    F: FnMut(Self::Item) -> B,"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "zktDhPu41tNeMUXAjwTpNJ9gTOU=",
+            "position": {
+              "position": {
+                "character": 24,
+                "line": 13
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "map(\u2026)",
+          "labelDetails": {
+            "description": "fn(self, F) -> Map<Self, F>",
+            "detail": "(as Iterator)"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(self, F) -> Map<Self, F>",
+          "documentation_head": "Takes a closure and creates an iterator which calls that closure on each\nelement.\n\n`map()` transforms one iterator into another, by means of its argument:\nsomething that implements [`FnMut`]. It produ",
+          "kind": 2,
+          "label": "map(\u2026)",
+          "labelDetails": {
+            "description": "fn(self, F) -> Map<Self, F>",
+            "detail": "(as Iterator)"
+          }
+        }
+      },
+      "user_trait_method": {
+        "candidates": 16,
+        "definition_tail": "join_ws/ext/src/lib.rs",
+        "external_docs": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.greet",
+        "hover_blocks": [
+          "ext::Widget",
+          "fn greet(&self) -> String"
+        ],
+        "item": {
+          "data": {
+            "for_ref": false,
+            "hash": "M5hRmdyOad1X2nJgn6T14iQaW3s=",
+            "position": {
+              "position": {
+                "character": 18,
+                "line": 18
+              },
+              "textDocument": {
+                "uri": "file:///home/user/oleum/fixtures/join_ws/app/src/bin/incomplete.rs"
+              }
+            },
+            "version": 0
+          },
+          "kind": 2,
+          "label": "greet()",
+          "labelDetails": {
+            "description": "fn(&self) -> String",
+            "detail": "(as Greet)"
+          }
+        },
+        "moniker": {
+          "__error__": {
+            "code": -32601,
+            "message": "unknown request"
+          }
+        },
+        "resolved": {
+          "detail": "fn(&self) -> String",
+          "kind": 2,
+          "label": "greet()",
+          "labelDetails": {
+            "description": "fn(&self) -> String",
+            "detail": "(as Greet)"
+          }
+        }
+      }
+    },
+    "index_seconds": 1.6,
+    "keys": {
+      "assoc_fn": {
+        "doc_url": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.new",
+        "hover_key": "alloc::vec::Vec::new",
+        "op_id": "rust:op:alloc::vec::Vec::new#inherent"
+      },
+      "deref_method": {
+        "doc_url": null,
+        "hover_key": "core::str::trim",
+        "op_id": "rust:op:core::str::trim#inherent"
+      },
+      "ext_trait_method": {
+        "doc_url": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.mean",
+        "hover_key": "ext::Vec::mean",
+        "op_id": "rust:op:alloc::vec::Vec::mean#as:SliceStats"
+      },
+      "free_fn_generic": {
+        "doc_url": "https://doc.rust-lang.org/stable/core/mem/fn.swap.html",
+        "hover_key": "core::mem::swap",
+        "op_id": "rust:op:core::mem::swap#free"
+      },
+      "inherent_method": {
+        "doc_url": "https://doc.rust-lang.org/stable/alloc/vec/struct.Vec.html#method.push",
+        "hover_key": "alloc::vec::Vec::push",
+        "op_id": "rust:op:alloc::vec::Vec::push#inherent"
+      },
+      "macro_generated": {
+        "doc_url": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.generated",
+        "hover_key": "ext::Widget::generated",
+        "op_id": "rust:op:ext::inner::Widget::generated#inherent"
+      },
+      "reexport_method": {
+        "doc_url": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.label",
+        "hover_key": "ext::inner::Widget::label",
+        "op_id": "rust:op:ext::inner::Widget::label#inherent"
+      },
+      "trait_method_std": {
+        "doc_url": "https://doc.rust-lang.org/stable/core/iter/traits/iterator/trait.Iterator.html#method.map",
+        "hover_key": "core::iter::traits::iterator::Iterator::map",
+        "op_id": "rust:op:core::iter::traits::iterator::Iterator::map#as:Iterator"
+      },
+      "user_trait_method": {
+        "doc_url": "https://docs.rs/ext/0.1.0/ext/inner/struct.Widget.html#method.greet",
+        "hover_key": "ext::Widget::greet",
+        "op_id": "rust:op:ext::inner::Widget::greet#as:Greet"
+      }
+    },
+    "moniker_capability": null,
+    "quiescent": true
+  },
+  "rust_analyzer": "rust-analyzer 1.97.0 (2d8144b 2026-07-07)",
+  "workspace": "/home/user/oleum/fixtures/join_ws"
+}

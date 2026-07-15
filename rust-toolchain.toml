@@ -1,0 +1,6 @@
+# Pinned per AMIGA-RUST-02: adjudication verdicts and ra_divergence records are
+# only meaningful against a known (rustc, rust-analyzer) pair.  Bump deliberately;
+# a bump invalidates cached probe verdicts and requires a re-probe pass.
+[toolchain]
+channel = "1.97.0"
+components = ["rust-analyzer", "rust-src"]
