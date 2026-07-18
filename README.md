@@ -36,7 +36,8 @@ touches vinur.
 | VINUR-OPS-01 | vinur-side op-annotation surface | **built** (vinur repo) |
 | SPIKE-0 | join key: r-a candidate → op id | **decided** — [docs/OLEUM-SPIKE-0_join_key_decision.md](docs/OLEUM-SPIKE-0_join_key_decision.md) |
 | AMIGA-RUST-02 | annotation runtime, hazard import, probes | **built** (MCP face, rust-base pack producer, probe harness); trace capture next |
-| AMIGA-RUST-03 | learned layer (harvest, negatives, conditional rank) | after -02 |
+| OLEUM-DST-01 | snippet distillation prompt contract | **Draft 2** — [docs/OLEUM-DST-01_snippet_distillation_contract.md](docs/OLEUM-DST-01_snippet_distillation_contract.md) |
+| AMIGA-RUST-03 | learned layer (harvest, negatives, conditional rank) | after the DST-01 harvester |
 
 ## Layout
 
@@ -79,8 +80,12 @@ knowledge is decoration, never a gate.
 
 ```
 rustup component add clippy                            # producer-only dependency
-python3 producers/build_pack.py                        # -> dist/rust-base.kdb (~19s)
+python3 producers/build_pack.py                        # -> dist/rust-base.kdb + codes.json (~19s)
 ```
+
+`codes.json` (every rustc error code + every Clippy lint, same pin) is the
+DST-01 V3 confabulation oracle — the distiller merge layer validates cited
+codes against it offline.
 
 Import on the host: `python3 -m knowledgehost import-bundle --path rust-base.kdb`
 (or the panel's Bundles tab), then run facetize.  Rebuilds from identical

@@ -60,6 +60,13 @@ def main():
     check("manifest names the bundle",
           ((man or {}).get("manifest") or {}).get("name") == "rust-base")
 
+    codes = json.loads((out / "codes.json").read_text())
+    check("codes.json (DST-01 V3 oracle) pins the toolchain and carries E0502",
+          codes["toolchain"].startswith("rustc") and "E0502" in codes["rustc"])
+    check("codes.json lists ALL clippy lints, not just hazard groups",
+          "clippy::unwrap_used" in codes["clippy"]
+          and len(codes["clippy"]) > counts["clippy"])
+
     # ── import into a fresh master and serve through ops_annotate ─────────────
     tmp2 = Path(tempfile.mkdtemp(prefix="oleum-pack-master-"))
     cfg = dict(khconfig.DEFAULTS)

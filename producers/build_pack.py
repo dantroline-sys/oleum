@@ -66,7 +66,9 @@ def ecodes(max_code=1000):
 
 
 def clippy_lints():
-    """{lint_name(underscored): (group, severity, meaning)} for the hazard groups."""
+    """(hazard_members, all_names) — hazard-group lints become diag nodes; the
+    complete lint-name list feeds the OLEUM-DST-01 V3 oracle (codes.json), since
+    a cited lint from any group is still a real lint."""
     r = subprocess.run(["clippy-driver", "-W", "help"], capture_output=True,
                        text=True, env=_env())
     if r.returncode != 0:
@@ -84,8 +86,9 @@ def clippy_lints():
                 lint = lint.strip().removeprefix("clippy::").replace("-", "_")
                 if lint:
                     members[lint] = g.group(1)
-    return {lint: (grp, CLIPPY_GROUPS[grp], meaning.get(lint, ""))
-            for lint, grp in members.items()}
+    hazard = {lint: (grp, CLIPPY_GROUPS[grp], meaning.get(lint, ""))
+              for lint, grp in members.items()}
+    return hazard, sorted(meaning)
 
 
 def curated():
@@ -128,15 +131,15 @@ def build(out_dir, vinur_repo, max_ecode=1000, with_ecodes=True, with_clippy=Tru
              json.dumps([{"doc_id": doc_id}]), "active"))
 
     counts = {"ecodes": 0, "clippy": 0, "ops": 0, "cards": 0}
-    if with_ecodes:
-        for code, summary in ecodes(max_ecode).items():
-            node(f"rust:diag:{code}", code, "diagnostic", summary, DOC_ECODES)
-            counts["ecodes"] += 1
-    if with_clippy:
-        for lint, (grp, _sev, meaning) in sorted(clippy_lints().items()):
-            node(f"rust:diag:clippy::{lint}", f"clippy::{lint}", "diagnostic",
-                 f"[{grp}] {meaning}", DOC_CLIPPY)
-            counts["clippy"] += 1
+    ec = ecodes(max_ecode) if with_ecodes else {}
+    cl_hazard, cl_all = clippy_lints() if with_clippy else ({}, [])
+    for code, summary in ec.items():
+        node(f"rust:diag:{code}", code, "diagnostic", summary, DOC_ECODES)
+        counts["ecodes"] += 1
+    for lint, (grp, _sev, meaning) in sorted(cl_hazard.items()):
+        node(f"rust:diag:clippy::{lint}", f"clippy::{lint}", "diagnostic",
+             f"[{grp}] {meaning}", DOC_CLIPPY)
+        counts["clippy"] += 1
 
     for e in curated():
         node(e["id"], e["label"], "fn", e["why"], DOC_CURATED)
@@ -158,7 +161,11 @@ def build(out_dir, vinur_repo, max_ecode=1000, with_ecodes=True, with_clippy=Tru
     res = bundles.split(cfg, str(out_dir), only={BUNDLE}, force=True,
                         log_fn=lambda m: None)
     f = res[BUNDLE]["file"]
-    log(f"pack: {f}")
+    # OLEUM-DST-01 §8 V3 oracle: every code the distiller may cite, same pin.
+    (out_dir / "codes.json").write_text(json.dumps(
+        {"toolchain": ver, "rustc": sorted(ec),
+         "clippy": ["clippy::" + n for n in cl_all]}, indent=1, sort_keys=True))
+    log(f"pack: {f}  (+ codes.json)")
     log(f"  {counts}  ({ver})")
     return f, counts
 
