@@ -36,8 +36,10 @@ touches vinur.
 | VINUR-OPS-01 | vinur-side op-annotation surface | **built** (vinur repo) |
 | SPIKE-0 | join key: r-a candidate → op id | **decided** — [docs/OLEUM-SPIKE-0_join_key_decision.md](docs/OLEUM-SPIKE-0_join_key_decision.md) |
 | AMIGA-RUST-02 | annotation runtime, hazard import, probes | **built** (MCP face, rust-base pack producer, probe harness); trace capture next |
-| OLEUM-DST-01 | snippet distillation prompt contract | **Draft 2** — [docs/OLEUM-DST-01_snippet_distillation_contract.md](docs/OLEUM-DST-01_snippet_distillation_contract.md) |
-| AMIGA-RUST-03 | learned layer (harvest, negatives, conditional rank) | after the DST-01 harvester |
+| OLEUM-DST-01 | snippet distillation prompt contract | **Draft 2** — [docs/OLEUM-DST-01_snippet_distillation_contract.md](docs/OLEUM-DST-01_snippet_distillation_contract.md); harvester built |
+| AMIGA-RUST-03 | learned layer (harvest, negatives, conditional rank) | after DST-01 phases A/D |
+
+Full task breakdown with rationale: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Layout
 
@@ -46,6 +48,7 @@ oleum/                     the daemon (stdlib only)
   mcp_server.py            stdio MCP server: rust_annotate / rust_hazards / rust_practice
   ra.py                    rust-analyzer session pool + semantic-token op extraction
   opkey.py                 op-id synthesis (the SPIKE-0 recipe, §6 grammar)
+  harvest.py               DST-01 S3 harvester: decision sites + candidate sets
   probe.py                 rustc adjudication probes -> var/probes.db (ra_divergence)
   vinur_client.py          POST /call client, fail-open
   config.py                oleum.toml over DEFAULTS
@@ -100,6 +103,7 @@ cd fixtures/join_ws && cargo check --bin completed --bin hazards   # fixture gat
 python3 tests/mcp_face_test.py                         # end-to-end MCP face
 python3 tests/hazard_pack_test.py                      # golden ids + pack round-trip
 python3 tests/probe_test.py                            # rustc adjudication harness
+python3 tests/harvest_test.py                          # DST-01 S3 harvester
 cd spikes/spike0 && python3 run_spike.py               # join-key regression baseline
 ```
 

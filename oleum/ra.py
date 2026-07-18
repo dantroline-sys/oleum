@@ -41,6 +41,8 @@ class Session:
                     "hover": {"contentFormat": ["markdown", "plaintext"]},
                     "declaration": {"linkSupport": True},
                     "definition": {"linkSupport": True},
+                    "documentSymbol": {"hierarchicalDocumentSymbolSupport": True},
+                    "completion": {"completionItem": {"labelDetailsSupport": True}},
                     "semanticTokens": {
                         "requests": {"full": True},
                         "tokenTypes": sorted(_TOKEN_TYPES),
@@ -167,13 +169,8 @@ class Session:
                 out.append((line, char, length))
         return out
 
-    def extract_ops(self, path, code=None):
-        """Op ids for every keyable function/method use in the file.
-
-        Returns (ops, unkeyed) where ops is {op_id: {"spans": [[line, char], …],
-        "hint": container}} with 1-based lines, and unkeyed counts uses no
-        mechanism could key (fail-open: absence of knowledge, never an error).
-        """
+    def open_overlay(self, path, code=None):
+        """didOpen the file (or the supplied unsaved content) -> (uri, text)."""
         path = Path(path).resolve()
         text = code if code is not None else path.read_text()
         uri = path.as_uri()
@@ -181,29 +178,48 @@ class Session:
         self.notify("textDocument/didOpen", {"textDocument": {
             "uri": uri, "languageId": "rust", "version": self.doc_version,
             "text": text}})
+        return uri, text
+
+    def close_overlay(self, uri):
+        self.notify("textDocument/didClose", {"textDocument": {"uri": uri}})
+
+    def key_at(self, uri, line, char):
+        """(op_id | None, hover_markdown) for the identifier at a position — the
+        SPIKE-0 recipe.  The single keying path shared by the annotation lane and
+        the harvester (DST-01 S3 requires both to derive identical ids)."""
+        pos = {"textDocument": {"uri": uri},
+               "position": {"line": line, "character": char}}
+        use_url = self.request("experimental/externalDocs", dict(pos))
+        if isinstance(use_url, dict):                    # error / unsupported
+            use_url = None
+        decl_url = None
+        decl = self.request("textDocument/declaration", dict(pos))
+        if isinstance(decl, list) and decl:
+            t = decl[0]
+            tpos = (t.get("targetSelectionRange") or t.get("range") or {}).get("start")
+            turi = t.get("targetUri") or t.get("uri")
+            if turi and tpos:
+                decl_url = self.request("experimental/externalDocs", {
+                    "textDocument": {"uri": turi}, "position": tpos})
+                if isinstance(decl_url, dict):
+                    decl_url = None
+        hov = self.request("textDocument/hover", dict(pos))
+        hover_md = (hov.get("contents") or {}).get("value", "") \
+            if isinstance(hov, dict) else ""
+        return opkey.synth(use_url, decl_url, hover_md), hover_md
+
+    def extract_ops(self, path, code=None):
+        """Op ids for every keyable function/method use in the file.
+
+        Returns (ops, unkeyed) where ops is {op_id: {"spans": [[line, char], …],
+        "hint": container}} with 1-based lines, and unkeyed counts uses no
+        mechanism could key (fail-open: absence of knowledge, never an error).
+        """
+        uri, _text = self.open_overlay(path, code)
         ops, unkeyed = {}, 0
         try:
             for line, char, _length in self._use_tokens(uri):
-                pos = {"textDocument": {"uri": uri},
-                       "position": {"line": line, "character": char}}
-                use_url = self.request("experimental/externalDocs", dict(pos))
-                if isinstance(use_url, dict):                # error / unsupported
-                    use_url = None
-                decl_url = None
-                decl = self.request("textDocument/declaration", dict(pos))
-                if isinstance(decl, list) and decl:
-                    t = decl[0]
-                    tpos = (t.get("targetSelectionRange") or t.get("range") or {}).get("start")
-                    turi = t.get("targetUri") or t.get("uri")
-                    if turi and tpos:
-                        decl_url = self.request("experimental/externalDocs", {
-                            "textDocument": {"uri": turi}, "position": tpos})
-                        if isinstance(decl_url, dict):
-                            decl_url = None
-                hov = self.request("textDocument/hover", dict(pos))
-                hover_md = (hov.get("contents") or {}).get("value", "") \
-                    if isinstance(hov, dict) else ""
-                op_id = opkey.synth(use_url, decl_url, hover_md)
+                op_id, hover_md = self.key_at(uri, line, char)
                 if op_id is None:
                     unkeyed += 1
                     continue
@@ -214,5 +230,5 @@ class Session:
                     if blocks:
                         rec["hint"] = blocks[0].strip().splitlines()[-1].strip()
         finally:
-            self.notify("textDocument/didClose", {"textDocument": {"uri": uri}})
+            self.close_overlay(uri)
         return ops, unkeyed
