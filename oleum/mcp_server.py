@@ -13,7 +13,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import __version__, ra
+from . import __version__, ra, traces
 from .vinur_client import Vinur
 
 PROTOCOL_FALLBACK = "2025-06-18"
@@ -115,9 +115,16 @@ class Server:
             out.append({"id": op_id, "spans": rec["spans"], "hint": rec["hint"],
                         "annotation": ann})
         out.sort(key=lambda o: o["spans"][0])
-        return {"ops": out, "unkeyed": unkeyed,
-                "graph_version": (joined or {}).get("graph_version"),
-                "knowledge": "ok" if joined is not None else "unavailable"}
+        res = {"ops": out, "unkeyed": unkeyed,
+               "graph_version": (joined or {}).get("graph_version"),
+               "knowledge": "ok" if joined is not None else "unavailable"}
+        traces.record("annotate", {
+            "path": path, "requested": len(ops), "unkeyed": unkeyed,
+            "joined": (joined or {}).get("joined"),
+            "graph_version": res["graph_version"], "knowledge": res["knowledge"],
+            "bare_ops": [o["id"] for o in out
+                         if not (o.get("annotation") or {}).get("annotated")]})
+        return res
 
     def t_rust_hazards(self, args):
         joined = self.vinur.ops_annotate(args["ops"])

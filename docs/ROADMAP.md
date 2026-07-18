@@ -1,7 +1,9 @@
 # oleum roadmap
 
 What remains, why each piece exists, and what it depends on.  Status
-2026-07-15.  Contracts live in this directory and in the AMIGA-RUST-02/-03
+2026-07-15 (evening pass: items 1, 2, 5, 6, 10 BUILT; 4 built stub-served,
+needs only the vLLM endpoints; 3 tooling ready, awaiting hand-annotation;
+7 drafted).  Contracts live in this directory and in the AMIGA-RUST-02/-03
 spec set; this file is the memory-jogger, not the normative text.
 
 ## Built ✓
@@ -18,7 +20,7 @@ spec set; this file is the memory-jogger, not the normative text.
 
 ## Next, in dependency order
 
-### 1. DST-01 digest builder (Phase A, D1–D7)
+### 1. DST-01 digest builder (Phase A, D1–D7) — BUILT (`oleum/dst/digest.py`)
 Per compilation unit, the deterministic context digest: crate ident (cargo
 metadata), module path, **context tags** (start heuristic: cfg/attr scan for
 `no_std`/`test`/`ffi`, async-fn presence, unsafe-block density), type
@@ -29,7 +31,7 @@ the builder should emit D1–D7 now and leave D8 null-able.
 *Why:* segments must never be distilled bare; the digest is reused by every
 segment of the unit, and its position first-in-suffix makes it prefix-cached.
 
-### 2. DST-01 validators (Phase D)
+### 2. DST-01 validators (Phase D) — BUILT (`oleum/dst/validate.py`)
 V1 schema, V2 verbatim cap, V3 hazard existence (against `dist/codes.json` —
 oracle already ships), V4 candidate closure (against the harvester's sets),
 V5 identifier leak, V8 op-id echo (grammar parse + byte-match).  All pure
@@ -40,14 +42,14 @@ batch).  V7 routing needs two models (see 4).
 *Why:* the gates are the product's honesty; building them before the
 distiller means the first LM output ever produced is already gated.
 
-### 3. Frozen regression set
+### 3. Frozen regression set — TOOLING BUILT (`python3 -m oleum.dst.freeze`), annotation pending
 ≥50 hand-annotated segments across context tags; gates must hold at 100% for
 any prompt/model change to ship.  Bootstrap: harvest a well-known T1 crate,
 Dan hand-annotates a first tranche of ~15 to unblock gate development.
 *Why:* prompt changes are invisible regressions without it; it is the only
 genuinely manual line item in the pipeline.
 
-### 4. Distiller orchestrator (Phase C serving) — needs the 96 GB box
+### 4. Distiller orchestrator (Phase C serving) — BUILT stub-served (`oleum/dst/orchestrate.py`); point at the 96 GB vLLM
 Batches segments unit-consecutively (digest rides the vLLM prefix cache),
 builds prefix/suffix per §6, enforces retry-then-quarantine, runs V7 routing.
 Model split advice on 96 GB: 32B-class primary (FP8/AWQ) + different-family
@@ -57,7 +59,7 @@ take the `lm_lease` if the embedder shares the GPU.
 *Why V7 needs a second family:* independent errors — same weights re-sampled
 agree with themselves.
 
-### 5. Merge layer (§9)
+### 5. Merge layer (§9) — BUILT (`oleum/dst/merge.py` → dist/rust-learned.kdb)
 Normalize `applicability` → content-hash (rule, op_id, register, tags); hash
 hit increments `observed_count` + appends provenance instead of minting a
 duplicate card; output lands in the **rust-learned** bundle via
@@ -66,14 +68,14 @@ unattached observations; hazards cross-link existing `rust:diag:*` nodes.
 *Why:* accumulation is RUST-03's rank denominator; without dedup every corpus
 pass doubles the graph.
 
-### 6. Trace capture (small, RUST-02 day-one item)
+### 6. Trace capture — BUILT (`oleum/traces.py`; gap queue = `traces.gaps()`)
 Log every `rust_annotate` call (op ids, spans count, unkeyed, graph_version,
 knowledge status) to `var/` SQLite alongside probes.  Probe runs are already
 recorded; annotate calls are not.
 *Why:* coverage reporting (joined/requested over time) and gap detection —
 which ops does real usage hit that the kb knows nothing about?
 
-### 7. Researcher lane (contract to draft: OLEUM-RES-01)
+### 7. Researcher lane — DRAFT 1 written (`docs/OLEUM-RES-01_researcher_lane_draft.md`), awaiting review
 The idle loop: gaps (unkeyed ops, ops with zero annotations from trace
 capture, ra_divergence surprises) → framed research questions → keyless
 sources (Stack Overflow / users.rust-lang.org via the StackExchange API,
@@ -105,7 +107,7 @@ the same `#trait` ids via declaration-jump.
 *Why later:* the MCP diff-lane already delivers the product promise; this is
 the keystroke-latency upgrade.
 
-### 10. Packaging & distribution (later)
+### 10. Packaging & distribution — pyproject BUILT (`pip install -e .` → `oleum` entry point); data-pack shape later
 pyproject/uv packaging so `oleum` installs instead of running from the repo;
 ship as: MCP server + `rust-base.kdb` (+ eventually `rust-learned.kdb`) +
 vinur config fragment (`ops_regions`, `ask_exclude_facets`) — the data-pack

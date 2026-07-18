@@ -50,8 +50,16 @@ oleum/                     the daemon (stdlib only)
   opkey.py                 op-id synthesis (the SPIKE-0 recipe, §6 grammar)
   harvest.py               DST-01 S3 harvester: decision sites + candidate sets
   probe.py                 rustc adjudication probes -> var/probes.db (ra_divergence)
+  traces.py                annotate-call trace capture -> var/traces.db (gap queue)
   vinur_client.py          POST /call client, fail-open
   config.py                oleum.toml over DEFAULTS
+  dst/                     OLEUM-DST-01 pipeline (offline except the serving call)
+    digest.py              Phase A: D1–D7 deterministic unit digest
+    prompts.py             Phase C: cached prefix + §7 schema + suffix assembly
+    validate.py            Phase D: V1–V6, V8 gates (pure functions)
+    orchestrate.py         serving client, retry/quarantine, V7 two-model routing
+    merge.py               §9 merge -> producers/learned kb -> dist/rust-learned.kdb
+    freeze.py              frozen-set annotation-template bootstrap
 producers/                 knowledge-pack toolchain (never runs on the host)
   op_hazards.toml          curated op hazards (ids golden-checked vs the extractor)
   build_pack.py            rustc error index + Clippy + curated -> dist/rust-base.kdb
@@ -104,6 +112,7 @@ python3 tests/mcp_face_test.py                         # end-to-end MCP face
 python3 tests/hazard_pack_test.py                      # golden ids + pack round-trip
 python3 tests/probe_test.py                            # rustc adjudication harness
 python3 tests/harvest_test.py                          # DST-01 S3 harvester
+python3 tests/dst_test.py                              # DST pipeline (stub-served)
 cd spikes/spike0 && python3 run_spike.py               # join-key regression baseline
 ```
 
