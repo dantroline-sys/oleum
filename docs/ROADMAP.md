@@ -127,3 +127,13 @@ platform-independence track.
    `rust_annotate` a file using `unwrap()` → panic caveat returns.
 6. When the distiller lands: vLLM up with the two-model split, empirical
    prefix-cache check, `lm_lease` coordination with the embedder.
+
+Box orchestration is now vinur-native (2026-07-18): declare the two vLLM
+models + embed + reranker in vinur's `[serving]` config table and run
+`./vinur.sh start` — one supervisor owns them and the kb (install vLLM with
+vinur's `./install.sh --serving`). `orchestrate.ServingLM` points at the same
+ports (`distill_urls`/`extract_urls` defaults: 11438 primary / 11435
+secondary). If Vinkona talks to this box from elsewhere: set vinur
+`host="0.0.0.0"` + `auth_token` (refused without one), and Vinkona's
+`knowledge`/`knowledge_host`/`research.export` blocks at `http://box:8771`
+(the export lane POSTs drops to `/drop`).
